@@ -1,0 +1,19 @@
+[project]
+name = "ai-builders-week-5"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "accelerate>=1.10.1",
+    "evaluate>=0.4.5",
+    "jupyter>=1.1.1",
+    "kaggle>=1.7.4.5",
+    "langdetect>=1.0.9",
+    "matplotlib>=3.10.6",
+    "pandas>=2.3.2",
+    "scikit-learn>=1.7.2",
+    "tokenizers>=0.22.0",
+    "torch>=2.8.0",
+    "transformers>=4.56.1",
+]
