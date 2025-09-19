@@ -13,7 +13,7 @@ In [./explore-data.ipynb](./explore-data.ipynb) I prepped the data:
 - filtered in reviews for movies that were tagged as "watched".
 - checked the distribution of ratings
 - sampled 200 reviews per rating (there are less than 300 ratings with half a star, so in order to keep things distributed I set a max of 200).
-- split into training, validation and test sets.
+- split into training (80%), validation (10%) and test (10%) sets.
 
 Here's some sample data:
 
@@ -67,7 +67,8 @@ unzip ./data/letterboxd-movie-reviews-90000.zip -d ./data
 
 ### Baseline
 
-The [./baseline.ipynb](./baseline.ipynb) notebook computes some baseline metrics:
+The [./baseline.ipynb](./baseline.ipynb) notebook computes some baseline metrics
+against the test set using an unrefined `bert-base-uncased` model:
 
 - QWK: `0.0736`
 - MAE: `1.32`
@@ -95,3 +96,15 @@ At this point I started measuring QWK and MAE. The best results I got were:
 - MAE: `1.23`
 
 which are better than the baseline, but not by a lot.
+
+### Next steps
+
+It's likely that I might need to change something fundamental in the approach.
+I don't think that tuning the hyperparameters is going to get me much further,
+but maybe unfreezing more layers will help.
+
+From this, I learned how to split a problem and the importance of choosing the right
+metrics in advance, by reminding myself what kind of problem is being solved.
+
+After this, I would like to inform myself more about the right approach and
+potentially get to a MAE of less than `1.0` and a QWK of more than `0.5`.
