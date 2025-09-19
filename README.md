@@ -1,21 +1,16 @@
 # AI Builders Week 5
 
-Download dataset:
-
-```bash
-uv run kaggle datasets download -d riyosha/letterboxd-movie-reviews-90000 -p data
-unzip ./data/letterboxd-movie-reviews-90000.zip -d ./data
-```
-
 ## Objective
 
-To fine-tune a model to receive a letterbox review and predict the star rating.
+To fine-tune a model to receive a letterbox review and predict the star rating,
+using this [dataset](https://www.kaggle.com/datasets/riyosha/letterboxd-movie-reviews-90000).
 
 ## Data preparation
 
-In [./explore-data.ipynb] I prepped the data:
+In [./explore-data.ipynb](./explore-data.ipynb) I prepped the data:
 
 - filtered out non-english reviews
+- filtered in reviews for movies that were tagged as "watched".
 - checked the distribution of ratings
 - sampled 200 reviews per rating (there are less than 300 ratings with half a star, so in order to keep things distributed I set a max of 200).
 - split into training, validation and test sets.
@@ -53,7 +48,50 @@ I started with [accuracy](https://huggingface.co/spaces/evaluate-metric/accuracy
 as a target measure to look into the test set performance. But I think this might
 not be correct as this doesn't take into account whether the predicted rating
 is close numerically to the true rating. In the different variants that I ran
-(with different hyperparameters and models and other things) I didn't get an
+(with different hyperparameters, models, unfrozen layers and other things) I didn't get an
 accuracy of more than `0.35`, being around 3 times better than random guessing
 (which would be `0.1` for 10 different ratings)
 
+Asking ChatGPT it told me to use other metrics like [Mean Absolute Error (MAE)](https://en.wikipedia.org/wiki/Mean_absolute_error) and [Cohen's Kappa (QWK)](https://numiqo.com/tutorial/cohens-kappa) to get a better sense of the model's performance.
+
+For this task, it seems good to aim for a MAE of less than `1.0` (meaning that on average the predicted rating is within 1 star of the true rating) and a QWK of more than `0.5` (indicating some agreement between predicted and true ratings).
+
+## How to run
+
+### Download dataset
+
+```bash
+uv run kaggle datasets download -d riyosha/letterboxd-movie-reviews-90000 -p data
+unzip ./data/letterboxd-movie-reviews-90000.zip -d ./data
+```
+
+### Baseline
+
+The [./baseline.ipynb](./baseline.ipynb) notebook computes some baseline metrics:
+
+- QWK: `0.0736`
+- MAE: `1.32`
+- Accuracy: `0.1`
+
+### Training and evaluation: classification
+
+At first I tried fine-tuning bert models using `AutoModelForSequenceClassification`.
+You can see the code in [./fine-tune-bert.ipynb](./fine-tune-bert.ipynb).
+I don't think these results were very good, I tried the base and large models,
+as well as different learning rates and number of epochs.
+
+The best accuracy I got was `0.31` (again, accuracy being not a good metric here),
+by unfreezing the 11th layer as well and with a batch size of `16`.
+
+### Training and evaluation: ordinal regression
+
+Asking ChatGPT it suggested that I should treat this as an ordinal regression
+problem instead of a classification problem, using something called [Coral](https://arxiv.org/abs/1901.07884), implemented with a custom subclass of `PreTrainedModel`. I
+implemented this in [./ordinal-regression.ipynb](./ordinal-regression.ipynb).
+
+At this point I started measuring QWK and MAE. The best results I got were:
+
+- QWK: `0.56`
+- MAE: `1.23`
+
+which are better than the baseline, but not by a lot.
