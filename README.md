@@ -97,7 +97,7 @@ At this point I started measuring QWK and MAE. The best results I got were:
 
 which are better than the baseline, but not by a lot.
 
-### Next steps
+## Next steps
 
 It's likely that I might need to change something fundamental in the approach.
 I don't think that tuning the hyperparameters is going to get me much further,
